@@ -69,13 +69,6 @@ Put downloaded data into the following directory structure:
  # Transform the skeleton to the center of the first frame
  python seq_transformation.py
 ```
-# Evaluation
-
-To use the pretrained weights for evaluation, please run the following command:
-
-```
-bash evaluate.sh
-```
 
 # Training & Testing
 
