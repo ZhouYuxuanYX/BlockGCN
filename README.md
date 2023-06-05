@@ -69,3 +69,53 @@ Put downloaded data into the following directory structure:
  # Transform the skeleton to the center of the first frame
  python seq_transformation.py
 ```
+# Evaluation
+
+To use the pretrained weights for evaluation, please run the following command:
+
+```
+bash evaluate.sh
+```
+
+# Training & Testing
+
+### Training
+
+```
+bash train.sh
+```
+
+Please check the configuration in the config directory.
+
+### Testing
+
+```
+bash evaluate.sh
+```
+
+To ensemble the results of different modalities, run the following command:
+
+```
+bash ensemble.sh
+```
+
+## Acknowledgements
+
+This repo is based on [2s-AGCN](https://github.com/lshiwjx/2s-AGCN) and [CTR-GCN](https://github.com/Uason-Chen/CTR-GCN). The data processing is borrowed from [SGN](https://github.com/microsoft/SGN) and [HCN](https://github.com/huguyuehuhu/HCN-pytorch), and the training strategy is based on [Hyperformer](https://github.com/ZhouYuxuanYX/Hyperformer).
+
+Thanks to the original authors for their work!
+
+## Citation
+
+Please cite this work if you find it useful:
+````BibTeX
+@article{zhou2023overcoming,
+  title={Overcoming Topology Agnosticism: Enhancing Skeleton-Based Action Recognition through Redefined Skeletal Topology Awareness},
+  author={Zhou, Yuxuan and Cheng, Zhi-Qi and He, Jun-Yan and Luo, Bin and Geng, Yifeng and Xie, Xuansong and Keuper, Margret},
+  journal={arXiv preprint arXiv:2305.11468},
+  year={2023}
+}
+````
+
+# Contact
+For any questions, feel free to contact: `zhouyuxuanyx@gmail.com`
