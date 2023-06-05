@@ -5,3 +5,8 @@ This is the official implementation of our paper [Overcoming Topology Agnosticis
 <p align="center">
    <img src="intro.png" alt="drawing" width="500"/>
 </p>
+
+## BlockGC
+<p align="center">
+   <img src="blockgc.png" alt="drawing" width="800"/>
+</p>
