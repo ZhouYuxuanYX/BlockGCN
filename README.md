@@ -8,7 +8,7 @@ This is the official implementation of our paper [Overcoming Topology Agnosticis
 
 ## Illustration of BlockGC 
 <p align="center">
-   <img src="blockgc.png" alt="drawing" width="800"/>
+   <img src="blockgc.png" alt="drawing" width="900"/>
 </p>
 
 # Preparation
