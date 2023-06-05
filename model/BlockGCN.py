@@ -288,11 +288,9 @@ class unit_gcn(nn.Module):
         for i in range(3):
             weight_norm = self.L2_norm(self.fc1[i])
             w1 = self.fc1[i]
-
-            # commented out for trying norm a afterwards
             w1 = w1/weight_norm
 
-            # k-hop connectivity outside softmax
+            # k-hop connectivity 
             # with normalization is better
             w1 = w1 + pos_emb[i]/self.L2_norm(pos_emb[i])
 
