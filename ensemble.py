@@ -26,8 +26,10 @@ if __name__ == "__main__":
     arg = parser.parse_args()
 
     dataset = arg.dataset
+    arg.alpha = [0.6, 0.7, 0.35, 0.2]
     if 'UCLA' in arg.dataset:
         label = []
+        arg.alpha = [0.7, 0.5, 0.6, 0.2]
         with open('./data/' + 'NW-UCLA/' + '/val_label.pkl', 'rb') as f:
             data_info = pickle.load(f)
             for index in range(len(data_info)):
@@ -66,11 +68,6 @@ if __name__ == "__main__":
     right_num = total_num = right_num_5 = 0
 
     if arg.joint_motion_dir is not None and arg.bone_motion_dir is not None:
-
-        arg.alpha = [0.6, 0.7, 0.35, 0.2]
-
-        # ucla
-        # arg.alpha = [0.6, 0.5, 0.4, 0.2]
 
         for i in tqdm(range(len(label))):
             l = label[i]
