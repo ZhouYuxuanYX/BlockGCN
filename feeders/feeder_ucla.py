@@ -101,6 +101,7 @@ class Feeder(Dataset):
             random_idx.sort()
             data[:,:,:] = value[random_idx,:,:]
             data[:,:,:] = value[random_idx,:,:]
+            joint = data
 
         else:
             random.random()
@@ -123,36 +124,28 @@ class Feeder(Dataset):
             value = scalerValue[:,:,:]
             length = value.shape[0]
 
-            idx = np.linspace(0,length-1,self.time_steps).astype(np.int)
+            idx = np.linspace(0,length-1,self.time_steps).astype(np.int64)
             data[:,:,:] = value[idx,:,:] # T,V,C
+            joint = data
 
         if 'bone' in self.data_path:
             data_bone = np.zeros_like(data)
             for bone_idx in range(20):
                 data_bone[:, self.bone[bone_idx][0] - 1, :] = data[:, self.bone[bone_idx][0] - 1, :] - data[:, self.bone[bone_idx][1] - 1, :]
-            data_bone[:, 2, :] = data[:, 2, :]
             data = data_bone
-
-        ## for joint modality
-        ## separate trajectory from relative coordinate to each frame's spine center
-        else:
-            # # there's a freedom to choose the direction of local coordinate axes!
-            trajectory = data[:, 2]
-            # let spine of each frame be the joint coordinate center
-            data = data - data[:, 2:3]
-            #
-            # ## works well with bone, but has negative effect with joint and distance gate
-            data[:, 2] = trajectory
 
         if 'motion' in self.data_path:
             data_motion = np.zeros_like(data)
             data_motion[:-1, :, :] = data[1:, :, :] - data[:-1, :, :]
             data = data_motion
         data = np.transpose(data, (2, 0, 1))
+        joint = np.transpose(joint, (2, 0, 1))
         C,T,V = data.shape
+        C,T,V = joint.shape
         data = np.reshape(data,(C,T,V,1))
+        joint = np.reshape(joint,(C,T,V,1))
 
-        return data, label, index
+        return joint, data, label, index
 
     def top_k(self, score, top_k):
         rank = score.argsort()
