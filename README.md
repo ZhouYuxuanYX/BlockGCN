@@ -98,17 +98,5 @@ This repo is based on [2s-AGCN](https://github.com/lshiwjx/2s-AGCN) and [CTR-GCN
 
 Thanks to the original authors for their work!
 
-## Citation
-
-Please cite this work if you find it useful:
-````BibTeX
-@article{zhou2023overcoming,
-  title={Overcoming Topology Agnosticism: Enhancing Skeleton-Based Action Recognition through Redefined Skeletal Topology Awareness},
-  author={Zhou, Yuxuan and Cheng, Zhi-Qi and He, Jun-Yan and Luo, Bin and Geng, Yifeng and Xie, Xuansong and Keuper, Margret},
-  journal={arXiv preprint arXiv:2305.11468},
-  year={2023}
-}
-````
-
 # Contact
 For any questions, feel free to contact: `zhouyuxuanyx@gmail.com`
