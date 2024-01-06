@@ -300,20 +300,6 @@ class TCN_GCN_unit(nn.Module):
         
         
 
-class TopoTrans(nn.Module):
-    def __init__(self, out_dim):
-        super(TopoTrans, self).__init__()
-        self.relu = nn.ReLU()
-        self.mlp = nn.Linear(64,out_dim)
-        self.bn = nn.BatchNorm1d(out_dim)
-        self.out_dim = out_dim
-        
-    def forward(self, x):
-        x = x.repeat(2,1)
-        x = self.mlp(x)
-        x = self.bn(x)
-        x = self.relu(x)
-        return x.unsqueeze(2).unsqueeze(3)
 
 
 class Topo(nn.Module):
