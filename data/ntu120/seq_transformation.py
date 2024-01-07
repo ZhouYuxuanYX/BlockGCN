@@ -203,12 +203,12 @@ def get_indices(performer, setup, evaluation='CSub'):
         # Get indices of test data
         for idx in test_ids:
             temp = np.where(performer == idx)[0]  # 0-based index
-            test_indices = np.hstack((test_indices, temp)).astype(np.int)
+            test_indices = np.hstack((test_indices, temp)).astype(np.int_)
 
         # Get indices of training data
         for train_id in train_ids:
             temp = np.where(performer == train_id)[0]  # 0-based index
-            train_indices = np.hstack((train_indices, temp)).astype(np.int)
+            train_indices = np.hstack((train_indices, temp)).astype(np.int_)
     else:  # Cross Setup (Setup IDs)
         train_ids = [i for i in range(1, 33) if i % 2 == 0]  # Even setup
         test_ids = [i for i in range(1, 33) if i % 2 == 1]  # Odd setup
@@ -216,22 +216,22 @@ def get_indices(performer, setup, evaluation='CSub'):
         # Get indices of test data
         for test_id in test_ids:
             temp = np.where(setup == test_id)[0]  # 0-based index
-            test_indices = np.hstack((test_indices, temp)).astype(np.int)
+            test_indices = np.hstack((test_indices, temp)).astype(np.int_)
 
         # Get indices of training data
         for train_id in train_ids:
             temp = np.where(setup == train_id)[0]  # 0-based index
-            train_indices = np.hstack((train_indices, temp)).astype(np.int)
+            train_indices = np.hstack((train_indices, temp)).astype(np.int_)
 
     return train_indices, test_indices
 
 
 if __name__ == '__main__':
-    setup = np.loadtxt(setup_file, dtype=np.int)  # camera id: 1~32
-    performer = np.loadtxt(performer_file, dtype=np.int)  # subject id: 1~106
-    label = np.loadtxt(label_file, dtype=np.int) - 1  # action label: 0~119
+    setup = np.loadtxt(setup_file, dtype=np.int_)  # camera id: 1~32
+    performer = np.loadtxt(performer_file, dtype=np.int_)  # subject id: 1~106
+    label = np.loadtxt(label_file, dtype=np.int_) - 1  # action label: 0~119
 
-    frames_cnt = np.loadtxt(frames_file, dtype=np.int)  # frames_cnt
+    frames_cnt = np.loadtxt(frames_file, dtype=np.int_)  # frames_cnt
     skes_name = np.loadtxt(skes_name_file, dtype=np.string_)
 
     with open(raw_skes_joints_pkl, 'rb') as fr:

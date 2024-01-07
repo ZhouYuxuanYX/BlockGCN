@@ -425,7 +425,7 @@ def get_raw_denoised_data():
     with open(raw_skes_colors_pkl, 'wb') as f:
         pickle.dump(raw_denoised_colors, f, pickle.HIGHEST_PROTOCOL)
 
-    frames_cnt = np.array(frames_cnt, dtype=np.int)
+    frames_cnt = np.array(frames_cnt, dtype=np.int_)
     np.savetxt(osp.join(save_path, 'frames_cnt.txt'), frames_cnt, fmt='%d')
 
     print('Saved raw denoised positions of {} frames into {}'.format(np.sum(frames_cnt),

@@ -202,33 +202,33 @@ def get_indices(performer, camera, evaluation='CS'):
         # Get indices of test data
         for idx in test_ids:
             temp = np.where(performer == idx)[0]  # 0-based index
-            test_indices = np.hstack((test_indices, temp)).astype(np.int)
+            test_indices = np.hstack((test_indices, temp)).astype(np.int_)
 
         # Get indices of training data
         for train_id in train_ids:
             temp = np.where(performer == train_id)[0]  # 0-based index
-            train_indices = np.hstack((train_indices, temp)).astype(np.int)
+            train_indices = np.hstack((train_indices, temp)).astype(np.int_)
     else:  # Cross View (Camera IDs)
         train_ids = [2, 3]
         test_ids = 1
         # Get indices of test data
         temp = np.where(camera == test_ids)[0]  # 0-based index
-        test_indices = np.hstack((test_indices, temp)).astype(np.int)
+        test_indices = np.hstack((test_indices, temp)).astype(np.int_)
 
         # Get indices of training data
         for train_id in train_ids:
             temp = np.where(camera == train_id)[0]  # 0-based index
-            train_indices = np.hstack((train_indices, temp)).astype(np.int)
+            train_indices = np.hstack((train_indices, temp)).astype(np.int_)
 
     return train_indices, test_indices
 
 
 if __name__ == '__main__':
-    camera = np.loadtxt(camera_file, dtype=np.int)  # camera id: 1, 2, 3
-    performer = np.loadtxt(performer_file, dtype=np.int)  # subject id: 1~40
-    label = np.loadtxt(label_file, dtype=np.int) - 1  # action label: 0~59
+    camera = np.loadtxt(camera_file, dtype=np.int_)  # camera id: 1, 2, 3
+    performer = np.loadtxt(performer_file, dtype=np.int_)  # subject id: 1~40
+    label = np.loadtxt(label_file, dtype=np.int_) - 1  # action label: 0~59
 
-    frames_cnt = np.loadtxt(frames_file, dtype=np.int)  # frames_cnt
+    frames_cnt = np.loadtxt(frames_file, dtype=np.int_)  # frames_cnt
     skes_name = np.loadtxt(skes_name_file, dtype=np.string_)
 
     with open(raw_skes_joints_pkl, 'rb') as fr:

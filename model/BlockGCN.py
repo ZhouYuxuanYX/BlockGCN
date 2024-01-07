@@ -6,6 +6,9 @@ import torch.nn as nn
 from torch.autograd import Variable
 from einops import rearrange, repeat
 import torch.nn.functional as F
+from torch_topological.nn.data import make_tensor
+from torch_topological.nn import VietorisRipsComplex
+from torch_topological.nn.layers import StructureElementLayer
 
 def import_class(name):
     components = name.split('.')
@@ -190,43 +193,10 @@ class unit_gcn(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):
                 bn_init(m, 1)
         bn_init(self.bn, 1e-6)
-
-        # # leave levels
-        # h1 = A.sum(0)
-        # h1[h1 != 0] = 1
-        # print("h1", h1)
-        # l = 0
-        # # self connection is there
-        # l1 = (h1.sum(1) == 2).astype(int)
-        # print("l1", l1)
-        # levels = []
-        # levels.append(l1)
-        # i = 0
-        # l += l1
-        # while True:
-        #     if 0 in l:
-        #         levels.append(((levels[i] * h1).sum(1) != 0).astype(int) * (1 - l))
-        #         i += 1
-        #         l += levels[i]
-        #         print(f"level {i + 1}", levels[i])
-        #     else:
-        #         break
-        #
-        # level = 0
-        # for index, l in enumerate(levels):
-        #     level += (index + 1) * l
-        # # print(level)
-        # level = torch.tensor(level)
-        # leaves = level.unsqueeze(1) - level.unsqueeze(0)
-        # self.leaves = (leaves - leaves.min()).long()
-        #
-        # self.rpe = nn.Parameter(torch.zeros((3, self.num_heads, self.leaves.max() + 1,)))
-
-
         # # k-hop
         h1 = A.sum(0)
         h1[h1 != 0] = 1
-        # print("h1", h1)
+       
 
         h = [None for _ in range(A.shape[-1])]
         h[0] = np.eye(A.shape[-1])
@@ -248,15 +218,9 @@ class unit_gcn(nn.Module):
         # hop connection
         self.rpe = nn.Parameter(torch.zeros((3, self.num_heads, self.hops.max() + 1,)))
 
-        # euclidean distance encoding
         self.in_channels = in_channels
         self.hidden_channels = in_channels if in_channels > 3 else 64
 
-        self.conv1 = nn.Conv2d(3, self.hidden_channels, kernel_size=1)
-        self.conv4 = nn.Conv2d(self.hidden_channels, self.in_channels, kernel_size=1)
-        self.act = nn.Tanh()
-
-        # # learnable head alpha
         if alpha:
             self.alpha = nn.Parameter(torch.ones(1, self.num_heads, 1, 1, 1))
         else:
@@ -278,13 +242,16 @@ class unit_gcn(nn.Module):
         weight_norm = torch.norm(weight, 2, dim=-2, keepdim=True) + 1e-4  # H, 1, V
         return weight_norm
 
-    def forward(self, x, d, s):
+    def forward(self, x):
         N, C, T, V = x.size()
         y = None
-
+       
         # # k-hop distance encoding,
         pos_emb = self.rpe[:, :, self.hops]
-
+       
+      
+      # N C liner(c-h)-  (n h)
+      # 256 - 64
         for i in range(3):
             weight_norm = self.L2_norm(self.fc1[i])
             w1 = self.fc1[i]
@@ -293,19 +260,8 @@ class unit_gcn(nn.Module):
             # k-hop connectivity 
             # with normalization is better
             w1 = w1 + pos_emb[i]/self.L2_norm(pos_emb[i])
-
-            # # euclidean distance encoding
-            # it is too slow if put temporal mean outside, cat std didn't work
-            d1 = self.conv1(d)
-            d1 = self.act(d1)
-            # n h c v v
-            d1 = self.conv4(d1).view(N, self.num_heads, C//self.num_heads, V, V) * self.alpha
-
-            # without normalization is better
-            w1 = d1 + w1.unsqueeze(1)
-
             x_in = x.view(N, self.num_heads, C//self.num_heads, T, V)
-            z = torch.einsum("nhctv, nhcvw->nhctw", (x_in, w1)).contiguous().view(N, -1, T, V)
+            z = torch.einsum("nhctv, hvw->nhctw", (x_in, w1)).contiguous().view(N, -1, T, V)
 
             z = self.fc2[i](z)
 
@@ -317,7 +273,7 @@ class unit_gcn(nn.Module):
         return y
 
 class TCN_GCN_unit(nn.Module):
-    def __init__(self, in_channels, out_channels, A, stride=1, residual=True, adaptive=True, kernel_size=5, dilations=[1,2], num_point=25, num_heads=8, alpha=False):
+    def __init__(self, in_channels, out_channels, A, stride=1, residual=True, adaptive=True, kernel_size=5, dilations=[1,2], num_point=25, num_heads=16, alpha=False):
         super(TCN_GCN_unit, self).__init__()
         self.gcn1 = unit_gcn(in_channels, out_channels, A, adaptive=adaptive, alpha=alpha)
         # self.tcn1 = unit_tcn(out_channels, out_channels, stride=stride)
@@ -336,11 +292,38 @@ class TCN_GCN_unit(nn.Module):
             self.residual = unit_tcn(in_channels, out_channels, kernel_size=1, stride=stride)
 
 
-    def forward(self, x, d, s):
+    def forward(self, x):
 
-            y = self.relu(self.tcn1(self.gcn1(x, d, s)) + self.residual(x))
+            y = self.relu(self.tcn1(self.gcn1(x)) + self.residual(x))
 
             return y
+        
+        
+
+
+
+class Topo(nn.Module):
+    def __init__(self, dims=0):
+        super(Topo, self).__init__()
+        self.vr = VietorisRipsComplex(dim=dims)
+        self.pl = StructureElementLayer(n_elements=64)
+        self.relu = nn.ReLU()
+    def L2_norm(self, weight):
+        weight_norm = torch.norm(weight, 2, dim=1) # H, 1, V
+        return weight_norm
+   
+    def forward(self, x):
+        x = x.mean(1)
+        x = x.unsqueeze(-1) - x.unsqueeze(-2)
+        x = x.mean(-3)
+        x = self.L2_norm(x)
+        x = (x-torch.min(x))/(torch.max(x)-torch.min(x))
+        x = self.vr(x)
+        x = make_tensor(x)
+        x = self.pl(x)
+        return x
+
+
 
 class Model(nn.Module):
     def __init__(self, num_class=60, num_point=25, num_person=2, graph=None, graph_args=dict(), in_channels=3,
@@ -357,9 +340,11 @@ class Model(nn.Module):
 
         self.num_class = num_class
         self.num_point = num_point
-        self.data_bn = nn.BatchNorm1d(num_person * in_channels * num_point)
+        self.data_bn = nn.BatchNorm1d(num_person * 128 * num_point)
 
-        self.l1 = TCN_GCN_unit(3, 128, A, residual=False, adaptive=adaptive, alpha=alpha)
+        self.to_joint_embedding = nn.Linear(in_channels, 128)
+        self.pos_embedding = nn.Parameter(torch.randn(1, self.num_point, 128))
+        self.l1 = TCN_GCN_unit(128, 128, A, adaptive=adaptive, alpha=alpha)
         self.l2 = TCN_GCN_unit(128, 128, A, adaptive=adaptive, alpha=alpha)
         self.l3 = TCN_GCN_unit(128, 128, A, adaptive=adaptive, alpha=alpha)
         self.l4 = TCN_GCN_unit(128, 128, A, adaptive=adaptive, alpha=alpha)
@@ -369,7 +354,18 @@ class Model(nn.Module):
         self.l8 = TCN_GCN_unit(256, 256, A, stride=2, adaptive=adaptive, alpha=alpha)
         self.l9 = TCN_GCN_unit(256, 256, A, adaptive=adaptive, alpha=alpha)
         self.l10 = TCN_GCN_unit(256, 256, A, adaptive=adaptive, alpha=alpha)
-        #
+        self.t0 = TopoTrans(out_dim=128)
+        self.t1 = TopoTrans(out_dim=128)
+        self.t2 = TopoTrans(out_dim=128)
+        self.t3 = TopoTrans(out_dim=128)
+        self.t4 = TopoTrans(out_dim=128)
+        self.t5 = TopoTrans(out_dim=256)
+        self.t6 = TopoTrans(out_dim=256)
+        self.t7 = TopoTrans(out_dim=256)
+        self.t8 = TopoTrans(out_dim=256)
+        self.t9 = TopoTrans(out_dim=256)
+        self.topo = Topo()
+        
         self.fc = nn.Linear(256, num_class)
         nn.init.normal_(self.fc.weight, 0, math.sqrt(2. / num_class))
         bn_init(self.data_bn, 1)
@@ -378,28 +374,30 @@ class Model(nn.Module):
         else:
             self.drop_out = lambda x: x
 
-    def forward(self, x, y):
+    def forward(self, x, y, joint):
         N, C, T, V, M = x.size()
-        x = x.permute(0, 4, 3, 1, 2).contiguous().view(N, M * V * C, T)
+        N, C, T, V, M = joint.size()
+        a = rearrange(joint, 'n c t v m -> n m c t v', m=M, v=V).contiguous()
+        a = self.topo(a)
+        x = rearrange(x, 'n c t v m -> (n m t) v c', m=M, v=V).contiguous()
 
+        x = self.to_joint_embedding(x)
+        x += self.pos_embedding[:, :self.num_point]
+        x = rearrange(x, '(n m t) v c -> n (m v c) t', m=M, t=T).contiguous()
+       
         x = self.data_bn(x)
-        x = x.view(N, M, V, C, T).permute(0, 1, 3, 4, 2).contiguous().view(N * M, C, T, V)
+        x = x.view(N, M, V, 128, T).permute(0, 1, 3, 4, 2).contiguous().view(N * M, 128, T, V)
 
-        # # eclidean joint2joint distance, n c t v v
-        d = x.unsqueeze(-1) - x.unsqueeze(-2)
-        s = (torch.roll(d, 1, -3) - d).mean(-3)
-        d = d.mean(-3)
-
-        x = self.l1(x, d, s)
-        x = self.l2(x, d, s)
-        x = self.l3(x, d, s)
-        x = self.l4(x, d, s)
-        x = self.l5(x, d, s)
-        x = self.l6(x, d, s)
-        x = self.l7(x, d, s)
-        x = self.l8(x, d, s)
-        x = self.l9(x, d, s)
-        x = self.l10(x, d, s)
+        x = self.l1(x + self.t0(a))
+        x = self.l2(x + self.t1(a))
+        x = self.l3(x + self.t2(a))
+        x = self.l4(x + self.t3(a))
+        x = self.l5(x + self.t4(a))
+        x = self.l6(x + self.t5(a))
+        x = self.l7(x + self.t6(a))
+        x = self.l8(x + self.t7(a))
+        x = self.l9(x + self.t8(a)) 
+        x = self.l10(x + self.t9(a))
 
         # for cross entropy loss
         # # N*M,C,T,V
@@ -409,9 +407,3 @@ class Model(nn.Module):
         x = self.drop_out(x)
 
         return self.fc(x), y
-
-
-
-
-
-

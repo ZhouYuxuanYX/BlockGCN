@@ -37,7 +37,7 @@ model_args:
 
 #optim
 weight_decay: 0.0004
-base_lr: 0.1
+base_lr: 0.05
 lr_decay_rate: 0.1
 step: [110, 120]
 warm_up_epoch: 5
