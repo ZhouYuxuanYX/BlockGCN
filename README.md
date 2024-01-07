@@ -3,12 +3,12 @@ This is the official implementation of our paper [Overcoming Topology Agnosticis
 
 ## Performance vs. Model Size on NTU RGB+D 120 Cross-Subject Benchmark
 <p align="center">
-   <img src="intro.png" alt="drawing" width="450"/>
+   <img src="fig1.png" alt="drawing" width="450"/>
 </p>
 
 ## Illustration of BlockGC 
 <p align="center">
-   <img src="fig1.png" alt="drawing" width="900"/>
+   <img src="main.png" alt="drawing" width="900"/>
 </p>
 
 # Preparation
