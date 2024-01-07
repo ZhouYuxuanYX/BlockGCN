@@ -98,5 +98,3 @@ This repo is based on [2s-AGCN](https://github.com/lshiwjx/2s-AGCN) and [CTR-GCN
 
 Thanks to the original authors for their work!
 
-# Contact
-For any questions, feel free to contact: `zhouyuxuanyx@gmail.com`
