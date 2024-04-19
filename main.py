@@ -474,7 +474,7 @@ class Processor():
         # torch.autograd.set_detect_anomaly(True)
 
         soft_label_emma = 0
-        for batch_idx, (data, label, index) in enumerate(process):
+        for batch_idx, (joint, data, label, index) in enumerate(process):
             self.global_step += 1
             with torch.no_grad():
                 data = data.float().cuda(self.output_device)
