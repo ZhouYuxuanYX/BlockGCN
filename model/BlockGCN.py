@@ -309,7 +309,10 @@ class TopoTrans(nn.Module):
         self.bn = nn.BatchNorm1d(out_dim)
         
     def forward(self, x):
-        # x = x.repeat(2,1)
+        # for ntu, two people at the same frame
+        x = x.repeat(2,1)
+        # for ucla, one person only
+        #x = x
         x = self.mlp(x)
         #BN
         x = self.bn(x)
