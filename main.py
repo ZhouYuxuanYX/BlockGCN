@@ -500,8 +500,8 @@ class Processor():
 
             with torch.cuda.amp.autocast(enabled=use_amp):
 
-                output, z = self.model(data, F.one_hot(label, num_classes=self.model.module.num_class))
-                # output, z = self.model(data, F.one_hot(label, num_classes=self.model.num_class))
+                output, z = self.model(data, F.one_hot(label, num_classes=self.model.module.num_class), joint)
+                # output, z = self.model(data, F.one_hot(label, num_classes=self.model.num_class), joint)
 
                 ## for mmd loss
                 # output, y, z = self.model(data, F.one_hot(label, num_classes=self.model.module.num_class))
