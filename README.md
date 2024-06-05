@@ -1,13 +1,22 @@
-# BlockGCN
+# BlockGCN: Redefining Topology Awareness for Skeleton-Based Action Recognition 
+
+[![Video](https://img.shields.io/badge/Watch%20Video-Click%20Here-blue)](https://www.youtube.com/watch?v=-SPN-HxDsJk&t=85s)
+[![Paper](https://img.shields.io/badge/Read%20Paper-Click%20Here-green)](https://www.researchgate.net/publication/379411619_BlockGCN_Redefining_Topology_Awareness_for_Skeleton-Based_Action_Recognition)
 
 ## Performance vs. Model Size on NTU RGB+D 120 Cross-Subject Benchmark
 <p align="center">
    <img src="fig1.png" alt="drawing" width="450"/>
 </p>
+<p align="center">
+   <b>Figure 1:</b> This graph demonstrates the superior performance of BlockGCN compared to existing methods on the NTU RGB+D 120 Cross-Subject Benchmark. BlockGCN achieves higher accuracy with fewer parameters, indicating its efficiency and effectiveness.
+</p>
 
 ## Illustration of BlockGC 
 <p align="center">
    <img src="blockgc.png" alt="drawing" width="900"/>
+</p>
+<p align="center">
+   <b>Figure 2:</b> An illustration of the BlockGC structure within BlockGCN. BlockGC divides the feature dimension into multiple groups, applying spatial aggregation and feature projection in parallel to efficiently model high-level semantics.
 </p>
 
 # Preparation
@@ -97,3 +106,19 @@ This repo is based on [2s-AGCN](https://github.com/lshiwjx/2s-AGCN) and [CTR-GCN
 
 Thanks to the original authors for their work!
 
+## References
+
+```bibtex
+@inproceedings{zhou2024blockgcn,
+  title={BlockGCN: Redefining Topology Awareness for Skeleton-Based Action Recognition},
+  author={Zhou, Yuxuan and Yan, Xudong and Cheng, Zhi-Qi and Yan, Yan and Dai, Qi and Hua, Xian-Sheng},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year={2024}
+}
+
+@article{zhou2023overcoming,
+  title={Overcoming topology agnosticism: Enhancing skeleton-based action recognition through redefined skeletal topology awareness},
+  author={Zhou, Yuxuan and Cheng, Zhi-Qi and He, Jun-Yan and Luo, Bin and Geng, Yifeng and Xie, Xuansong},
+  journal={arXiv preprint arXiv:2305.11468},
+  year={2023}
+}
