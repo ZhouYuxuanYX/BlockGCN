@@ -577,7 +577,7 @@ class Processor():
             pred_list_ema = []
             step = 0
             process = tqdm(self.data_loader[ln], ncols=40)
-            for batch_idx, (data, label, index) in enumerate(process):
+            for batch_idx, (joint, data, label, index) in enumerate(process):
                 label_list.append(label)
                 if arg.ema:
                     label_list_ema.append(label)
@@ -585,7 +585,7 @@ class Processor():
                     data = data.float().cuda(self.output_device)
                     label = label.long().cuda(self.output_device)
                     # for mmd
-                    output, y = self.model(data, F.one_hot(label, num_classes=self.model.module.num_class))
+                    output, y = self.model(data, F.one_hot(label, num_classes=self.model.module.num_class), joint)
                     # output, y = self.model(data, F.one_hot(label, num_classes=self.model.num_class))
 
 
