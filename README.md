@@ -1,7 +1,7 @@
 # BlockGCN: Redefining Topology Awareness for Skeleton-Based Action Recognition 
 
 [![Video](https://img.shields.io/badge/Watch%20Video-Click%20Here-blue)](https://www.youtube.com/watch?v=-SPN-HxDsJk&t=85s)
-[![Paper](https://img.shields.io/badge/Read%20Paper-Click%20Here-green)](https://www.researchgate.net/publication/379411619_BlockGCN_Redefining_Topology_Awareness_for_Skeleton-Based_Action_Recognition)
+[![Paper](https://img.shields.io/badge/Read%20Paper-Click%20Here-green)](https://openaccess.thecvf.com/content/CVPR2024/papers/Zhou_BlockGCN_Redefine_Topology_Awareness_for_Skeleton-Based_Action_Recognition_CVPR_2024_paper.pdf)
 
 ## Performance vs. Model Size on NTU RGB+D 120 Cross-Subject Benchmark
 <p align="center">
